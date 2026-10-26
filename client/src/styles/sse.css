@@ -50,7 +50,7 @@
 .item-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 12px; box-shadow: var(--shadow-sm); break-inside: avoid; }
 .item-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 10px; }
 .item-head .code { flex: none; font-family: var(--mono); font-size: 0.8rem; font-weight: 700; color: var(--brand); background: var(--accent-soft); padding: 4px 8px; border-radius: 7px; }
-.item-head h3 { margin: 0 0 4px; font-size: 1rem; color: var(--brand-deep); }
+.item-head h3 { margin: 0 0 4px; font-size: 1rem; color: var(--brand-deep); white-space: pre-line; }
 .item-head .indicator { margin: 0; white-space: pre-line; color: var(--text); font-size: 0.93rem; }
 .answer-row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 12px; padding: 10px 12px; border-radius: 10px; background: var(--panel); margin-top: 8px; }
 .answer-row:has(.part) { grid-template-columns: 170px minmax(0, 1.4fr) minmax(0, 1fr); }

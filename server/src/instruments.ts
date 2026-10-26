@@ -4,7 +4,7 @@
 // dropdown. The option lists below were reconstructed from those selected values (ordered best →
 // worst) and can be edited freely. No answers or ratings from the templates are included: the
 // form starts blank.
-import type { Instrument } from "./instrumentTypes.js";
+import type { Instrument, Item } from "./instrumentTypes.js";
 
 // ---------- shared option sets ----------
 
@@ -24,6 +24,8 @@ const DOC_UPDATED = [
   "AVAILABLE, NOT UPDATED",
   "NOT AVAILABLE",
 ];
+/** Safety file documents (instrument 7.1). Only "IN FILE/ FULLY UPDATED" is visible on the template; the rest follow the same pattern. */
+const SAFETY_FILE = ["IN FILE/ FULLY UPDATED", "IN FILE/ PARTLY UPDATED", "IN FILE/ NOT UPDATED", "NOT IN FILE"];
 const CONDITION = ["GOOD", "FAIR", "POOR"];
 const UPDATE_STATUS = ["FULLY UPDATED", "PARTLY UPDATED", "NOT UPDATED"];
 const REGULARITY = ["REGULAR", "IRREGULAR", "NONE"];
@@ -100,6 +102,14 @@ const HR = "Human Resource Management";
 
 const BASIC_SERVICES = "Basic Services";
 const TERRAIN_MAINTENANCE = "School terrain - effective implementation of Maintenance Policy";
+
+/** Safety file rows: codes and labels keep running numbers across groups (7.1.2.5 "5. Access control register", …). */
+const safetyDocs = (prefix: string, heading: string, first: number, docs: string[]): Item[] =>
+  docs.map((doc, i) => ({ code: `${prefix}.${first + i}`, heading, indicator: `${first + i}. ${doc}`, options: SAFETY_FILE }));
+
+/** A group of YES / NO indicators under one heading, numbered from 1. */
+const yesNoGroup = (prefix: string, heading: string, indicators: string[]): Item[] =>
+  indicators.map((indicator, i) => ({ code: `${prefix}.${i + 1}`, heading, indicator, options: YES_NO }));
 
 // ---------- instruments ----------
 
@@ -995,12 +1005,75 @@ export const INSTRUMENTS: Instrument[] = [
     purpose:
       "To evaluate the level at which the school provides for a healthy, safe and secure environment for learners, staff, parents and others",
     items: [
-      {
-        code: "7.2.1.1",
-        heading: "Learner care: There is supervision of learners.",
-        indicator: "Before school starts",
-        options: FREQUENCY,
-      },
+      // 7.1 – Safety file documents (numbered 1–20 across the groups, as on the template)
+      ...safetyDocs("7.1.1", "Policies in Safety file", 1, [
+        "Health, Safety and Security Policy",
+        "Learner Code of Conduct",
+        "Regulations for Safety Measures in Public Schools",
+        "Copy of Occupational Health & Safety Act",
+      ]),
+      ...safetyDocs("7.1.2", "Checklists / Documents", 5, [
+        "Access control register",
+        "Early release registers for learners",
+        "Plans and records of random searches",
+        "Consent forms - templates",
+        "Vehicle licenses",
+        "Scholar Transport Records",
+        "Safety Audit and School Safety Diagnostic",
+        "Fire extinguisher register",
+        "Evacuation drills conducted",
+        "Holiday checklist",
+      ]),
+      ...safetyDocs("7.1.3", "Appointments letters in file", 15, [
+        "School Safety Officer/Compliance Officer",
+        "Health and Safety Representatives",
+        "First Aider(s) L1 as per OHSA (1993)",
+        "Fire Marshall(s) as per OHSA (1993)",
+      ]),
+      ...safetyDocs("7.1.4", "Correspondence", 19, ["School Safety Circulars", "School Safety General Correspondence"]),
+
+      // 7.2 – Safety practices (YES / NO)
+      ...yesNoGroup("7.2.1", "Learner care:\nThere is supervision of learners.", ["Before school starts", "During non-teaching time", "During breaks", "After school"]),
+      ...yesNoGroup("7.2.2", "Learner care and support", [
+        "The school has procedures to support learners in need, for pastoral care and / or academic support.",
+      ]),
+      ...yesNoGroup("7.2.3", "School Nutrition:\nThe nutrition programme is appropriately administered.\n(ONLY IF APPLICABLE)", [
+        "The meals are provided on time daily throughout the year",
+        "The menu is in line with the requirements of the NSNP",
+        "The meals are served in an orderly manner",
+        "The time allocated for the feeding is not exceeded to impact on instructional time.",
+        "The provisions are appropriately stored",
+        "The food is prepared in hygienic and safe conditions",
+        "School Nutrition Equipment/enclosed gas bottles (no exposed flames and all safety measures taken)",
+      ]),
+      ...yesNoGroup("7.2.4", "Emergency Procedures established", [
+        "The school has conducted an emergency drill once per quarter",
+        "Emergency numbers",
+        "Evacuation procedures",
+        "Evacuation plan",
+        "Safety and emergency signage",
+      ]),
+      ...yesNoGroup("7.2.5", "Risk Self-Assessment Tool (RSTAT) completed", ["Completed", "Treatment Plan in place"]),
+      ...yesNoGroup(
+        "7.2.6",
+        "School Safety Committee is functional. The principal ensures that all measures are in place for the safety and well-being of all stakeholders. Partnerships are formed with the community to keep the school safe and secure.",
+        [
+          "1. Names and contact details of Safety Committee members",
+          "2. Functional with 9-point Safety Plan Process",
+          "3. Linking of school with local police station information completed",
+          "4. National School Safety Framework (NSSF) Training completed",
+          "5. Incident Reporting Register",
+          "6. Notices, Agenda, Minutes and Attendance Register on record",
+          "7. Appointments letters in Safety File of:\n- School Safety Officer/Compliance Officer\n- Health and Safety Representatives\n- First Aiders as per OHSA (1993)\n- Marshall(s) as per OHSA (1993)",
+        ],
+      ),
+      ...yesNoGroup("7.2.7", "Education Continuity Plan", [
+        "Comprehensive Safety Plan",
+        "Contingency Plan",
+        "Industrial Action Contingency Plan",
+        "Electricity Disruption Plan, including certificate of compliance for electrical installations",
+        "Disaster Management Procedures Plan",
+      ]),
     ],
   },
 
