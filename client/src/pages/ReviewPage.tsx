@@ -102,8 +102,7 @@ export default function ReviewPage() {
       <ErrorBox error={submitError} />
       {incomplete.length > 0 && (
         <div className="alert alert-warn">
-          Please finish instrument{incomplete.length > 1 ? "s" : ""} {incomplete.join(", ")} before submitting, or untick {incomplete.length > 1 ? "them" : "it"} on the{" "}
-          <Link to="/">start page</Link>.
+          All sections must be completed. Please finish section{incomplete.length > 1 ? "s" : ""} {incomplete.join(", ")} before submitting.
         </div>
       )}
       <div className="footer-bar">

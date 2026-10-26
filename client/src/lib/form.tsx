@@ -60,7 +60,6 @@ export function FormProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     api.get<FormDefinition>("/form").then(setDef).catch((e) => setError(e.message));
   }, []);
-
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
@@ -76,7 +75,8 @@ export function FormProvider({ children }: { children: ReactNode }) {
     return {
       def,
       error,
-      draft,
+      // Every section is compulsory: always work through all instruments, in order.
+      draft: def ? { ...draft, selected: def.instruments.map((i) => i.number) } : draft,
       instrument,
       update: (patch) => setDraft((d) => ({ ...d, ...patch })),
       setAnswer: (n, code, part, patch) =>

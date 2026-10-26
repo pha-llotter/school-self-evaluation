@@ -45,14 +45,15 @@ const submission = z.object({
           .max(500),
       }),
     )
-    .min(1, "Complete at least one instrument")
     .max(INSTRUMENTS.length),
 });
 
 type Submission = z.infer<typeof submission>;
 
-/** Every included instrument must be fully answered with valid choices. */
+/** Every instrument must be included and fully answered with valid choices. */
 function validate(s: Submission) {
+  const missing = INSTRUMENTS.filter((def) => !s.instruments.some((i) => i.number === def.number)).map((def) => def.number);
+  if (missing.length) throw new HttpError(400, `Please complete every section (missing: ${missing.join(", ")})`);
   const seen = new Set<number>();
   for (const inst of s.instruments) {
     const def = INSTRUMENTS.find((i) => i.number === inst.number);

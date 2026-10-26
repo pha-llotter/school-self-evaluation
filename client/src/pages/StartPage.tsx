@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ErrorBox, ProgressBar, Spinner } from "../components/ui";
 import { useForm } from "../lib/form";
 
-/** Welcome: who is filling in the evaluation and which instruments they will complete. */
+/** Welcome: who is filling in the evaluation, and the sections they must all complete. */
 export default function StartPage() {
   const { def, error, draft, update, progress, clear } = useForm();
   const navigate = useNavigate();
@@ -13,16 +13,16 @@ export default function StartPage() {
   if (!def) return <Spinner />;
   const { school, instruments } = def;
   const started = Object.keys(draft.answers).length > 0;
-
-  function toggle(n: number) {
-    update({ selected: draft.selected.includes(n) ? draft.selected.filter((x) => x !== n) : [...draft.selected, n].sort((a, b) => a - b) });
-  }
+  // Continue at the first section that is not finished yet
+  const next = instruments.find((i) => {
+    const p = progress(i.number);
+    return p.answered < p.total;
+  });
 
   function start() {
     if (draft.name.trim().length < 2) return setProblem("Please enter your name.");
-    if (!draft.selected.length) return setProblem("Choose at least one instrument to complete.");
     setProblem(null);
-    navigate(`/form/${draft.selected[0]}`);
+    navigate(next ? `/form/${next.number}` : "/review");
   }
 
   return (
@@ -40,8 +40,8 @@ export default function StartPage() {
           <dd>{school.circuit}</dd>
         </dl>
         <p className="muted">
-          For every indicator, choose the <b>current situation</b> and a <b>rating</b> from 5 (Outstanding) to 1, or 0 when it does not apply.
-          Your answers are saved on this computer as you go, until you submit.
+          Please complete <b>all {instruments.length} sections</b>. For every indicator, choose the <b>current situation</b> and a <b>rating</b> from 5 (Outstanding)
+          to 1, or 0 when it does not apply. Your answers are saved on this computer as you go, so you can finish later.
         </p>
         <label className="field">
           <span>Your name</span>
@@ -54,32 +54,25 @@ export default function StartPage() {
       </section>
 
       <section className="page-card">
-        <div className="row between" style={{ marginBottom: 12 }}>
-          <h2 style={{ margin: 0 }}>Choose your instruments</h2>
-          <span className="row">
-            <button className="btn btn-sm" onClick={() => update({ selected: instruments.map((i) => i.number) })}>Select all</button>
-            <button className="btn btn-sm" onClick={() => update({ selected: [] })}>None</button>
-          </span>
-        </div>
+        <h2 style={{ marginTop: 0 }}>Sections to complete</h2>
         <div className="instrument-list">
           {instruments.map((inst) => {
             const p = progress(inst.number);
-            const on = draft.selected.includes(inst.number);
+            const done = p.answered === p.total;
             return (
-              <label key={inst.number} className={`instrument-choice${on ? " on" : ""}`}>
-                <input type="checkbox" checked={on} onChange={() => toggle(inst.number)} />
-                <span className="num">{inst.number}</span>
+              <div key={inst.number} className={`instrument-choice${done ? " on" : ""}`} style={{ cursor: "default" }}>
+                <span className="num">{done ? "✓" : inst.number}</span>
                 <span className="info">
                   <b>{inst.title}</b>
                   <small className="muted">{inst.items.length} indicators</small>
                   {p.answered > 0 && (
                     <span className="mini-progress">
-                      <ProgressBar value={p.answered} max={p.total} ok={p.answered === p.total} />
+                      <ProgressBar value={p.answered} max={p.total} ok={done} />
                       <small>{p.answered} of {p.total} answered</small>
                     </span>
                   )}
                 </span>
-              </label>
+              </div>
             );
           })}
         </div>
@@ -96,7 +89,7 @@ export default function StartPage() {
             </button>
           )}
           <button className="btn btn-primary btn-big" onClick={start}>
-            {started ? "Continue ▶" : "Start ▶"}
+            {!started ? "Start ▶" : next ? "Continue ▶" : "Review & submit ▶"}
           </button>
         </div>
       </section>
