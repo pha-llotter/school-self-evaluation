@@ -117,7 +117,7 @@ systemctl stop sse && rm -rf /opt/sse.bad && mv /opt/sse /opt/sse.bad && mv /opt
 | Backup now | `sse-backup` |
 | List backups | `ls -lh /var/backups/sse` |
 | Restore a backup | `systemctl stop sse; gunzip -c /var/backups/sse/FILE.db.gz > /var/lib/sse/sse.db; rm -f /var/lib/sse/sse.db-wal /var/lib/sse/sse.db-shm; chown sse:sse /var/lib/sse/sse.db; systemctl start sse` |
-| Forgot admin password | `systemctl stop sse; sqlite3 /var/lib/sse/sse.db "DELETE FROM settings WHERE key = 'admin_hash'"; systemctl start sse; cat /var/lib/sse/ADMIN-FIRST-LOGIN.txt` |
+| Forgot admin password | `systemctl stop sse; sqlite3 /var/lib/sse/sse.db "DELETE FROM settings WHERE key = 'admin_hash'"; rm -f /var/lib/sse/ADMIN-FIRST-LOGIN.txt; chown -R sse:sse /var/lib/sse; systemctl start sse; sleep 5; cat /var/lib/sse/ADMIN-FIRST-LOGIN.txt` |
 
 Backups are kept 30 days on the VPS. To copy one to this PC (PowerShell):
 ```powershell
