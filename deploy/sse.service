@@ -1,0 +1,30 @@
+[Unit]
+Description=School Self-Evaluation
+After=network.target
+
+[Service]
+Type=simple
+User=sse
+Group=sse
+WorkingDirectory=/opt/sse/server
+EnvironmentFile=/etc/sse/sse.env
+ExecStart=/usr/bin/node --import tsx src/index.ts
+Restart=always
+RestartSec=3
+
+# Hardening: the app can only write to its data folder
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/var/lib/sse
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

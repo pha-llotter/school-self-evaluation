@@ -1,0 +1,11 @@
+# Caddy gets and renews the HTTPS certificate for this domain automatically.
+__DOMAIN__ {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:5050
+	log {
+		output file /var/log/caddy/sse-access.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+	}
+}
